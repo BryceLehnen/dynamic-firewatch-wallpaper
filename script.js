@@ -153,50 +153,50 @@ async function getSunsetSunrise() {
     cachedSunsetSunrise = data;
 }
 
-window.wallpaperPropertyListener = { //Wallpaper engine properties
-    applyUserProperties: function(properties) {
+// window.wallpaperPropertyListener = { //Wallpaper engine properties
+//     applyUserProperties: function(properties) {
 
-        if (properties.customimage) { //Setting the directory location if specified
-            if (properties.customimage.value) {
-                imageDirectory = 'file:///' + properties.customimage.value + '/';
-			} else {
-			imageDirectory = 'default/';
-			}
-        }
-        if (properties.file_type) {
-            if (properties.file_type.value !== "") {
-                fileType = properties.file_type.value;
-            }
-        }
-        if (properties.day_hour) {
-            if (properties.day_hour.value !== "") {
-                day_hour = properties.day_hour.value;
-			}
-        }
-		if (properties.day_minute) {
-			if (properties.day_minute.value !== "") {
-				day_minute = properties.day_minute.value;
-			}
-		}
-		if (properties.sunset_hour) {
-			if (properties.sunset_hour.value !== "") {
-                sunset_hour = properties.sunset_hour.value;
-			}
-        }
-		if (properties.sunset_minute) {
-			if (properties.sunset_minute.value !== "") {
-				sunset_minute = properties.sunset_minute.value;
-			}
-		}
-		if (properties.night_hour) {
-			if (properties.night_hour.value !== "") {
-                night_hour = properties.night_hour.value;
-			}
-        }
-		if (properties.night_minute) {
-			if (properties.night_minute.value !== "") {
-				night_minute = properties.night_minute.value;
-			}
-        }
-    }
-};
+//         if (properties.customimage) { //Setting the directory location if specified
+//             if (properties.customimage.value) {
+//                 imageDirectory = 'file:///' + properties.customimage.value + '/';
+// 			} else {
+// 			imageDirectory = 'default/';
+// 			}
+//         }
+//         if (properties.file_type) {
+//             if (properties.file_type.value !== "") {
+//                 fileType = properties.file_type.value;
+//             }
+//         }
+//         if (properties.day_hour) {
+//             if (properties.day_hour.value !== "") {
+//                 day_hour = properties.day_hour.value;
+// 			}
+//         }
+// 		if (properties.day_minute) {
+// 			if (properties.day_minute.value !== "") {
+// 				day_minute = properties.day_minute.value;
+// 			}
+// 		}
+// 		if (properties.sunset_hour) {
+// 			if (properties.sunset_hour.value !== "") {
+//                 sunset_hour = properties.sunset_hour.value;
+// 			}
+//         }
+// 		if (properties.sunset_minute) {
+// 			if (properties.sunset_minute.value !== "") {
+// 				sunset_minute = properties.sunset_minute.value;
+// 			}
+// 		}
+// 		if (properties.night_hour) {
+// 			if (properties.night_hour.value !== "") {
+//                 night_hour = properties.night_hour.value;
+// 			}
+//         }
+// 		if (properties.night_minute) {
+// 			if (properties.night_minute.value !== "") {
+// 				night_minute = properties.night_minute.value;
+// 			}
+//         }
+//     }
+// };
