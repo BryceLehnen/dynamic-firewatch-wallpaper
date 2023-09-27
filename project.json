@@ -1,0 +1,133 @@
+{
+	"contentrating" : "Everyone",
+	"description" : "Day-Sunset-Night Cycle allows you to customize your wallpaper with dynamic pictures dedicated to a specific time of day. Images, states, and times are all customizable!\n\nProperties:\n\nImage Directory: Allows you to change the directory the wallpaper gets your pictures from. The directory must, at least, contain \"day.jpg\", \"sunset.jpg\", \"night.jpg\". If you only have a day and night picture, duplicate one and name it to sunset. \nYou are also able to add sub-states, meaning you can have multiple pictures for each state of the day. The sub-state cycles according to the sub-state interval at the bottom. This allows you to cycle through multiple day pictures, for example. All you have to do is name the sub-state to \"day2.jpg\" according to the state and sub-state index. You do not have to number the first state, keep it at \"day.jpg\"\n\nDay Hour Start: The hour day.jpg will display. \nDay Minute Start: The minute of the hour^ day.jpg will display\n\nSunset Hour Start: The hour sunset.jpg will display.\nSunset Minute Start: The minute of the hour^ sunset.jpg will display.\n\nNight Hour Start: The hour night.jpg will display.\nNight Minute Start: The minute of the hour^ night.jpg will display.\n\nDay Sub-State Count: The amount of day sub-states you have in the directory. (e.g. Set this to \"2\" if you have a \"day.jpg\" and a \"day2.jpg\")\nSunset Sub-State Count: The amount of sunset sub-states you have in the directory\nNight Sub-State Count: The amount of night sub-states you have in the directory\n\nSub-state Time Interval: The amount of time, in minutes, before the next sub-state, if any.\n\nDefault art by arsenixc on DeviantArt",
+	"file" : "index.html",
+	"general" : 
+	{
+		"properties" : 
+		{
+			"customimage" : 
+			{
+				"mode" : "fetchall",
+				"order" : 100,
+				"text" : "Image directory",
+				"type" : "directory"
+			},
+			"day_hour" : 
+			{
+				"editable" : false,
+				"max" : 24,
+				"min" : 0,
+				"order" : 101,
+				"text" : "Day Hour Start",
+				"type" : "slider",
+				"value" : 7
+			},
+			"day_minute" : 
+			{
+				"editable" : false,
+				"max" : 59,
+				"min" : 0,
+				"order" : 102,
+				"text" : "Day Minute Start",
+				"type" : "slider",
+				"value" : 0
+			},
+			"day_substate_count" : 
+			{
+				"fraction" : false,
+				"max" : 10,
+				"min" : 1,
+				"order" : 107,
+				"text" : "Day Substate Count",
+				"type" : "slider",
+				"value" : 1
+			},
+			"night_hour" : 
+			{
+				"editable" : false,
+				"max" : 24,
+				"min" : 0,
+				"order" : 105,
+				"text" : "Night Hour Start",
+				"type" : "slider",
+				"value" : 20
+			},
+			"night_minute" : 
+			{
+				"editable" : false,
+				"max" : 59,
+				"min" : 0,
+				"order" : 106,
+				"text" : "Night Minute Start",
+				"type" : "slider",
+				"value" : 0
+			},
+			"night_substate_count" : 
+			{
+				"fraction" : false,
+				"max" : 10,
+				"min" : 1,
+				"order" : 109,
+				"text" : "Night Substate Count",
+				"type" : "slider",
+				"value" : 1
+			},
+			"schemecolor" : 
+			{
+				"order" : 0,
+				"text" : "ui_browse_properties_scheme_color",
+				"type" : "color",
+				"value" : "0.7529411764705882 0.7529411764705882 0.7529411764705882"
+			},
+			"substate_time_interval" : 
+			{
+				"fraction" : false,
+				"max" : 60,
+				"min" : 1,
+				"order" : 110,
+				"text" : "Substate Time Interval",
+				"type" : "slider",
+				"value" : 1
+			},
+			"sunset_hour" : 
+			{
+				"editable" : false,
+				"max" : 24,
+				"min" : 0,
+				"order" : 103,
+				"text" : "Sunset Hour Start",
+				"type" : "slider",
+				"value" : 18
+			},
+			"sunset_minute" : 
+			{
+				"editable" : false,
+				"max" : 59,
+				"min" : 0,
+				"order" : 104,
+				"text" : "Sunset Minute Start",
+				"type" : "slider",
+				"value" : 30
+			},
+			"sunset_substate_count" : 
+			{
+				"fraction" : false,
+				"max" : 10,
+				"min" : 1,
+				"order" : 108,
+				"text" : "Sunset Substate Count",
+				"type" : "slider",
+				"value" : 1
+			}
+		}
+	},
+	"preview" : "preview.gif",
+	"tags" : [ "Landscape" ],
+	"title" : "Customizable Day-Sunset-Night Cycle",
+	"type" : "Web",
+	"version" : 3,
+	"visibility" : "public",
+	"workshopid" : "1687241265",
+	"workshopurl" : "steam://url/CommunityFilePage/1687241265"
+}
