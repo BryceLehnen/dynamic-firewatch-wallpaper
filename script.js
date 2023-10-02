@@ -11,9 +11,29 @@ var time = 0, lastTime = 0, lastState = 0;
 var switchTime = 0;
 
 // Cached values of lat, lon
+var currentcity = "", currentstate = "", currentcountry = "";
 let geoLocation;
 // Cached values of sunrise, sunset, noon times in UTC
 let cachedSunsetSunrise;
+
+// Wallpaper engine properties
+window.wallpaperPropertyListener = {
+    applyUserProperties: function(properties) {
+        if (properties.city) {
+            currentcity = properties.city.value;
+            console.log(properties.city.value);
+        }
+        if (properties.state) {
+            currentstate = properties.state.value;
+            console.log(properties.state.value);
+        }
+        if (properties.country) {
+            currentcountry = properties.country.value;
+            console.log(properties.country.value);
+        }
+        load();
+    }
+};
 
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -51,14 +71,14 @@ function update(){
 // the offset from it and UTC
 function UTCToLocal(utc) {
     const {sunrise, sunset, solar_noon} = utc.results;
-    //console.log(sunrise);
-    //console.log(sunset);
-    //console.log(solar_noon);
+    console.log(sunrise);
+    console.log(sunset);
+    console.log(solar_noon);
 
     // Creating the offset and converting it to hours
     const now = new Date();
     var offset = now.getTimezoneOffset();
-    //console.log(offset);
+    console.log(offset);
     var os = (offset / 60);
 
     // Sunrise times
@@ -96,10 +116,10 @@ function UTCToLocal(utc) {
     fin_sunset = sethour + setmin;
     fin_noon = noonhour + noonmin;
 
-    //console.log("Converted times")
-    //console.log(fin_sunrise);
-    //console.log(fin_sunset);
-    //console.log(fin_noon);
+    console.log("Converted times")
+    console.log(fin_sunrise);
+    console.log(fin_sunset);
+    console.log(fin_noon);
 }
 
 // Sets the time when certain backgrounds should change based on final times
@@ -169,7 +189,7 @@ function transition(futimage, curimage) {
     
 // Fetch request function with error catching
 async function get(api, n = 10, wait = 1000) {
-    //console.log("FETCH REQUEST");
+    console.log("FETCH REQUEST");
     try {
         const response = await fetch(api);
         if (!response.ok) {
@@ -188,43 +208,26 @@ async function get(api, n = 10, wait = 1000) {
 
 // Changes the lat and lon based on the city given in Wallpaper Engine using nominatim from OSM
 async function updateCity() {
-    //console.log("Update city");
+    console.log("Update city");
+    //currentcity = "London";
+    //currentstate = "England";
+    //currentcountry = "United Kingdom";
     var q = "q=" + currentcity + ",+" + currentstate + ",+" + currentcountry;
+    console.log(q);
     const data = await get("https://nominatim.openstreetmap.org/search?" + q + "&addressdetails=1&format=json");
     // Caching the lat and lon
     geoLocation = { lat: data[0].lat, lon: data[0].lon};
     cachedSunsetSunrise = null;
-    //console.log(geoLocation);
+    console.log(geoLocation);
 }
 
 // Caches the sunrise, sunset, and noon times from the sunrise-sunset API
 async function getSunsetSunrise() {
-    //console.log("Update sunrise-sunset");
+    console.log("Update sunrise-sunset");
     const data = await get(`https://api.sunrise-sunset.org/json?lat=${geoLocation.lat}&lng=${geoLocation.lon}&date=today&formatted=0`);
-    //console.log(data);
+    console.log(data);
     if (!data.results) {
         throw new Error('No sunrise sunset data');
     }
     cachedSunsetSunrise = data;
 }
-
-// Wallpaper engine properties
-window.wallpaperPropertyListener = {
-    applyUserProperties: function(properties) {
-        if (properties.city) {
-            if (properties.city.value !== "") {
-                var currentcity = properties.city.value;
-            }
-        }
-        if (properties.state) {
-            if (properties.state.value !== "") {
-                var currentstate = properties.state.value;
-            }
-        }
-        if (properties.country) {
-            if (properties.country.value !== "") {
-                var currentcountry = properties.country.value;
-            }
-        }
-    }
-};
