@@ -6,14 +6,31 @@
 	{
 		"properties" : 
 		{
-			
+			"city" :
+			{
+				"type" : "textinput",
+				"value" : "London",
+				"text" : "Enter your city"
+			},
+			"state" :
+			{
+				"type" : "textinput",
+				"value" : "England",
+				"text" : "Enter your state (Leave empty if not applicable)"
+			},
+			"country" :
+			{
+				"type" : "textinput",
+				"value" : "United Kingdom",
+				"text" : "Enter your country"
+			}
 		}
 	},
 	"preview" : "preview.gif",
 	"tags" : [ "Landscape" ],
 	"title" : "Dynamic Firewatch Wallpaper",
 	"type" : "Web",
-	"version" : "1.0",
+	"version" : "2.0",
 	"visibility" : "public",
 	"workshopid" : "3042208232",
 	"workshopurl" : "https://steamcommunity.com/sharedfiles/filedetails/?id=3042208232"

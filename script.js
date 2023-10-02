@@ -1,33 +1,37 @@
 var states = ["darknight", "witching", "night", "pink", "green", "whiteblue", "orangeyellow", "purple", "blackwhite"];
 var stateCount = [1, 1, 1];
 var imageDirectory = "default/", fileType = "png";
-//var day_hour = 7, day_minute = 0, sunset_hour = 18, sunset_minute = 30, night_hour = 20, night_minute = 0;
-//var day_time = 700, sunset_time = 1830, night_time = 2000;
 
+// Converted times for sunrise, sunset, noon events (eg. 1452 meaning 14hrs 52min)
 var fin_sunrise, fin_sunset, fin_noon;
-// Denote the start times for the following backgrounds
+// Denote the start times for the following backgrounds (eg. 300 meaning 3hrs 00min)
 var darknight = 0, witching = 300, night = 400, pink, green, whiteblue, orangeyellow, purple, blackwhite = 2300;
 
 var time = 0, lastTime = 0, lastState = 0;
 var switchTime = 0;
+
+// Cached values of lat, lon
 let geoLocation;
+// Cached values of sunrise, sunset, noon times in UTC
 let cachedSunsetSunrise;
 
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function load() { //Runs on load
-    updateCity();
-    getSunsetSunrise();
-    await sleep(1000);
-    utcTomtn(cachedSunsetSunrise);
+// Runs on load
+// awaits are need to ensure that
+async function load() {
+    await updateCity();
+    await getSunsetSunrise();
+    UTCToLocal(cachedSunsetSunrise);
     setTimes();
     changeTime();
     setInterval(update,1000/30);
 }
 
-function update(){ //Check what time it is and change image accordingly 
+// Check what time it is and change image accordingly 
+function update(){
     changeTime();
     if (lastTime != time) {
         lastTime = time;
@@ -43,52 +47,62 @@ function update(){ //Check what time it is and change image accordingly
     }
 }
 
-function utcTomtn(utc) {
+// Takes the UTC time given from sunrise-sunset API and converts it to your local time by checking your current time and getting
+// the offset from it and UTC
+function UTCToLocal(utc) {
     const {sunrise, sunset, solar_noon} = utc.results;
     //console.log(sunrise);
     //console.log(sunset);
     //console.log(solar_noon);
 
+    // Creating the offset and converting it to hours
+    const now = new Date();
+    var offset = now.getTimezoneOffset();
+    //console.log(offset);
+    var os = (offset / 60);
+
     // Sunrise times
-    if (parseInt(sunrise.substring(11, 13)) >= 6) {
-        risehour = parseInt((sunrise.substring(11, 13) - 6) * 100);
+    if (parseInt(sunrise.substring(11, 13)) >= os) {
+        risehour = parseInt((sunrise.substring(11, 13) - os) * 100);
     }
     else {
-        diff = 6 - parseInt(sunrise.substring(11, 13));
+        diff = os - parseInt(sunrise.substring(11, 13));
         risehour = (24 - diff) * 100;
     }
     risemin = parseInt(sunrise.substring(14, 16));
 
     // Sunset times
-    if (parseInt(sunset.substring(11, 13)) >= 6) {
-        sethour = parseInt((sunset.substring(11, 13) - 6) * 100);
+    if (parseInt(sunset.substring(11, 13)) >= os) {
+        sethour = parseInt((sunset.substring(11, 13) - os) * 100);
     }
     else {
-        diff = 6 - parseInt(sunset.substring(11, 13));
+        diff = os - parseInt(sunset.substring(11, 13));
         sethour = (24 - diff) * 100;
     }
     setmin = parseInt(sunset.substring(14, 16));
 
     // Local noon times
-    if (parseInt(solar_noon.substring(11, 13)) >= 6) {
-        noonhour = parseInt((solar_noon.substring(11, 13) - 6) * 100);
+    if (parseInt(solar_noon.substring(11, 13)) >= os) {
+        noonhour = parseInt((solar_noon.substring(11, 13) - os) * 100);
     }
     else {
-        diff = 6 - parseInt(solar_noon.substring(11, 13));
+        diff = os - parseInt(solar_noon.substring(11, 13));
         noonhour = (24 - diff) * 100;
     }
     noonmin = parseInt(solar_noon.substring(14, 16));
     
+    // Setting the final times
     fin_sunrise = risehour + risemin;
     fin_sunset = sethour + setmin;
     fin_noon = noonhour + noonmin;
 
-    console.log("Converted times")
-    console.log(fin_sunrise);
-    console.log(fin_sunset);
-    console.log(fin_noon);
+    //console.log("Converted times")
+    //console.log(fin_sunrise);
+    //console.log(fin_sunset);
+    //console.log(fin_noon);
 }
 
+// Sets the time when certain backgrounds should change based on final times
 function setTimes() {
     pink = fin_sunrise - 100;
     green = fin_sunrise + 100;
@@ -97,23 +111,65 @@ function setTimes() {
     purple = fin_sunset + 100;
 }
 
-function changeTime() { //Change the current time
+// Changes the current time
+function changeTime() {
 	var curTime = new Date();
 	time = (curTime.getHours() * 100) + curTime.getMinutes();
 }
 
-
-function change(index) { //Change the image according to the index provided
+// Change the image according to the index provided with transitions
+async function change(index) { 
+    // Checks if background should be changed
 	if (index != lastState) {
 		lastState = index;
 	}
-    var image = document.getElementById('background');
-    image.src = imageDirectory + states[index] + "." + fileType;
-    image.alt = "Could not load '" + imageDirectory + states[index] + "." + fileType + "'" + time + " " + switchTime;
+    else {
+        return;
+    }
+    // Grabs elements based on ID's
+    var futimage = document.getElementById('future');
+    var curimage = document.getElementById('current');
+
+    // Changes the source for future image
+    // Note: Future image is BEHIND current image so nothing happens visually yet
+    futimage.src = imageDirectory + states[index] + "." + fileType;
+    futimage.alt = "Could not load '" + imageDirectory + states[index] + "." + fileType + "'" + time + " " + switchTime;
+    
+    // Transition changes opacity of current image to create fade effect
+    await transition(futimage, curimage);
+    
+    // Changes the source for current image and opacity back to 1
+    curimage.src = imageDirectory + states[index] + "." + fileType;
+    curimage.alt = "Could not load '" + imageDirectory + states[index] + "." + fileType + "'" + time + " " + switchTime;
+    curimage.style.opacity = 1;
 }
 
+// Fade transition functions
+function transition(futimage, curimage) {
+    return new Promise(function (resolve, reject) {
+        // Sets both images to fully opaque
+        futimage.style.opacity = 1;
+        curimage.style.opacity = 1;
+        // Rate of opacity change interval
+        var del = 0.01;
+        // Loop for fade
+        var id = setInterval(changeOpacity, 20);
+    
+        // Slowly changes opacity of current image from 1 to 0
+        function changeOpacity() {
+            curimage.style.opacity = curimage.style.opacity - del;
+            if (curimage.style.opacity <= 0) {
+                clearInterval(id);
+                resolve();
+            }
+        
+        }
+    })
+}
+    
+// Fetch request function with error catching
 async function get(api, n = 10, wait = 1000) {
-    console.log("Get utc times");
+    //console.log("FETCH REQUEST");
     try {
         const response = await fetch(api);
         if (!response.ok) {
@@ -130,73 +186,45 @@ async function get(api, n = 10, wait = 1000) {
     }
 }
 
-
-function updateCity() {
-    try {
-        //const data = await get(`https://nominatim.openstreetmap.org/search/${city}?format=json&addressdetails=1`);
-        console.log("City found");
-        geoLocation = { lat: 45.68404, lon: -111.05202, city: "Bozeman", country: "United States of America", state: "Montana" };
-        cachedSunsetSunrise = null;
-        console.log(geoLocation);
-        return;
-    } catch (e) {
-        console.log("Couldn't find city");
-    }
+// Changes the lat and lon based on the city given in Wallpaper Engine using nominatim from OSM
+async function updateCity() {
+    //console.log("Update city");
+    var q = "q=" + currentcity + ",+" + currentstate + ",+" + currentcountry;
+    const data = await get("https://nominatim.openstreetmap.org/search?" + q + "&addressdetails=1&format=json");
+    // Caching the lat and lon
+    geoLocation = { lat: data[0].lat, lon: data[0].lon};
+    cachedSunsetSunrise = null;
+    //console.log(geoLocation);
 }
 
+// Caches the sunrise, sunset, and noon times from the sunrise-sunset API
 async function getSunsetSunrise() {
+    //console.log("Update sunrise-sunset");
     const data = await get(`https://api.sunrise-sunset.org/json?lat=${geoLocation.lat}&lng=${geoLocation.lon}&date=today&formatted=0`);
-    console.log(data);
+    //console.log(data);
     if (!data.results) {
         throw new Error('No sunrise sunset data');
     }
     cachedSunsetSunrise = data;
 }
 
-// window.wallpaperPropertyListener = { //Wallpaper engine properties
-//     applyUserProperties: function(properties) {
-
-//         if (properties.customimage) { //Setting the directory location if specified
-//             if (properties.customimage.value) {
-//                 imageDirectory = 'file:///' + properties.customimage.value + '/';
-// 			} else {
-// 			imageDirectory = 'default/';
-// 			}
-//         }
-//         if (properties.file_type) {
-//             if (properties.file_type.value !== "") {
-//                 fileType = properties.file_type.value;
-//             }
-//         }
-//         if (properties.day_hour) {
-//             if (properties.day_hour.value !== "") {
-//                 day_hour = properties.day_hour.value;
-// 			}
-//         }
-// 		if (properties.day_minute) {
-// 			if (properties.day_minute.value !== "") {
-// 				day_minute = properties.day_minute.value;
-// 			}
-// 		}
-// 		if (properties.sunset_hour) {
-// 			if (properties.sunset_hour.value !== "") {
-//                 sunset_hour = properties.sunset_hour.value;
-// 			}
-//         }
-// 		if (properties.sunset_minute) {
-// 			if (properties.sunset_minute.value !== "") {
-// 				sunset_minute = properties.sunset_minute.value;
-// 			}
-// 		}
-// 		if (properties.night_hour) {
-// 			if (properties.night_hour.value !== "") {
-//                 night_hour = properties.night_hour.value;
-// 			}
-//         }
-// 		if (properties.night_minute) {
-// 			if (properties.night_minute.value !== "") {
-// 				night_minute = properties.night_minute.value;
-// 			}
-//         }
-//     }
-// };
+// Wallpaper engine properties
+window.wallpaperPropertyListener = {
+    applyUserProperties: function(properties) {
+        if (properties.city) {
+            if (properties.city.value !== "") {
+                var currentcity = properties.city.value;
+            }
+        }
+        if (properties.state) {
+            if (properties.state.value !== "") {
+                var currentstate = properties.state.value;
+            }
+        }
+        if (properties.country) {
+            if (properties.country.value !== "") {
+                var currentcountry = properties.country.value;
+            }
+        }
+    }
+};
